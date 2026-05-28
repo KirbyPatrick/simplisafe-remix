@@ -31,8 +31,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        {/* ✅ Optimizely Web Experimentation Snippet */}
-        <script src="https://cdn.optimizely.com/js/6231585842790400.js" />
+        {/* ✅ Optimizely Web Experimentation Snippet — synchronous blocking load */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.optimizely.com/js/6231585842790400.js';
+  s.async = false;
+  document.head.appendChild(s);
+})();`,
+          }}
+        />
       </head>
       <body>
         {children}
