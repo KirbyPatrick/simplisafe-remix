@@ -5,7 +5,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from "react-router";
+import { useEffect } from "react";
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -23,6 +25,18 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+function OptimizelyRouteListener() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.optimizely) {
+      window.optimizely.push({ type: "activate" });
+    }
+  }, [location.pathname]);
+
+  return null;
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -31,7 +45,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        {/* ✅ Optimizely Web Experimentation Snippet — synchronous blocking load */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function() {
@@ -53,7 +66,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+      <OptimizelyRouteListener />
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
